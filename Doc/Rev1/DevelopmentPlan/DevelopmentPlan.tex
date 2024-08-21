@@ -1,0 +1,253 @@
+\documentclass{article}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\title{SE 3XA3: Development Plan\\Flag Generator}
+
+\author{Team \#2, Team Jakriel
+		\\ Akram Hannoufa, hannoufa
+		\\ Nathaniel Hu, hun4
+		\\ Ganghoon Park, parkg10
+}
+
+\date{}
+
+% \input{../Comments}
+
+\begin{document}
+
+\begin{table}[hp]
+\caption{Revision History} \label{TblRevisionHistory}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
+\midrule
+2022-02-03 & Akram Hannoufa & Initial addition of Meeting Plan, POC plan, Tech, and Style\\
+2022-02-03 & Nathaniel Hu & Added in initial draft of the introductory blurb and Communication plan, Member Roles and Git Workflow plan sections\\
+2022-02-04 & Ganghoon Park & Added in location of project Gantt Chart to Project Schedule section\\
+2022-02-04 & Nathaniel Hu & Made a few corrective edits\\
+\textcolor{red}{2022-04-11} & \textcolor{red}{Akram Hannoufa} & \textcolor{red}{Final Revision, Project Review Added}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage
+
+\maketitle
+
+\noindent The purpose of this Development Plan document is to outline all of the information necessary to develop the \textcolor{red}{Random Flag Generator project, based on the open-source project PAGAN}. This project document details the specifics of the team meetings, team communication, and other team dynamics. In addition to that, it outlines the Git Workflow plan, the Proof of Concept Demonstration plan, and other aspects related to the implementation and technology required. Finally, it outlines the tentative project schedule and the project review (to be filled in at a later time).
+
+\section{Team Meeting Plan}
+\begin{itemize}
+	\item \textbf{Meeting Day:} Wednesday
+	\item \textbf{Frequency:} Weekly
+	\item \textbf{Time:} 5pm-6:30pm (1.5hrs)
+	\item \textbf{Location:} Microsoft Teams Call (maybe switch to in person library meeting later)
+	\item \textbf{Roles:} 
+	\begin{itemize}
+		\item \textbf{Scribe: } Nathaniel Hu 
+		\item \textbf{Agenda Consultant: } Akram Hannoufa
+	\end{itemize}
+\end{itemize}
+\section{Team Communication Plan}
+
+The following channels of communication will be used in the following instances where it is appropriate to communicate the specified information:
+
+\begin{itemize}
+	\begin{item}
+		\textit{Messenger Group Chat}
+		\begin{itemize}
+    	\item low to mid-priority questions
+    	\item declaration of intentions to edit a file
+    	\item other low to mid-priority communication
+      \item late arrivals to labs or meetings
+    \end{itemize}
+  \end{item}
+
+  \begin{item}
+    \textit{Email}
+    \begin{itemize}
+      \item transfer of information not pushed to the repository
+      \item clarification of preferred merge conflict resolution
+      \item other low-priority, non-urgent communication
+    \end{itemize}
+  \end{item}
+
+  \begin{item}
+    \textit{Teams Group Chat/Meeting}
+    \begin{itemize}
+      \item meeting discussions and questions
+      \item urgent messages
+    \end{itemize}
+  \end{item}
+
+  \begin{item}
+    \textit{Text/Phone}
+    \begin{itemize}
+      \item urgent questions, emergencies
+      \item no reply to other communication channels (i.e. email and teams group chat/meeting)
+    \end{itemize}
+  \end{item}
+\end{itemize}
+
+\section{Team Member Roles}
+
+\begin{itemize}
+  \begin{item}
+    \textit{Akram Hannoufa}
+    \begin{itemize}
+      \item developer
+      \item testing expert
+    \end{itemize}
+  \end{item}
+
+  \begin{item}
+    \textit{Ganghoon Park}
+    \begin{itemize}
+      \item developer
+      \item documentation expert
+    \end{itemize}
+  \end{item}
+
+  \begin{item}
+    \textit{Nathaniel Hu}
+    \begin{itemize}
+      \item developer
+      \item git expert
+    \end{itemize}
+  \end{item}
+\end{itemize}
+
+\section{Git Workflow Plan}
+
+\subsection{Branch Types}
+The Git repository will be composed of the following branches:
+\begin{itemize}
+  \item A \textbf{main} branch, which will contain the version of the code in production
+  \item one \textbf{personal} branch per team member, which will be named the team member's MacID; it is on these branches where most of the development will occur
+  \item one \textbf{shared} branch for main development called “develop”; it is on this branch where all work from the personal branches are integrated together, tested and verified before being merged into the main branch
+  \item one \textbf{shared} branch per documentation deliverable, which will be the name of the documentation deliverable in lower case followed by the word “work”, with underscores in place of spaces (e.g. “dev\_plan\_work”); it is on these branches where documentation development will occur, mainly to proactively prevent merge conflicts
+\end{itemize}
+
+\subsection{Pushing and Pulling}
+\begin{itemize}
+  \item \textbf{documentation deliverable} branches will be synchronized with the \textbf{main} branch, but will only be merged into it when the documentation deliverable being developed is ready for a release
+  \item \textbf{personal} branches will be synchronized with the \textbf{develop} branch, and will only be merged into the \textbf{develop} branch when they don’t contain non-functioning/faulty code (to the developer’s best knowledge)
+  \item the \textbf{develop} branch will be synchronized to the \textbf{main} branch, and will only be merged into the \textbf{main} branch when it doesn’t contain non-functioning/faulty code (to the developers’ best knowledge)
+
+  \begin{item}
+    merging ready code into the \textbf{develop} or \textbf{main} branches (henceforth called the \textbf{target} branch) will work as follows:
+    \begin{enumerate}
+      \item push the work on your \textbf{current (personal)} branch to its corresponding remote repository to have a back-up of your current code in case there are problems when merging
+      \begin{item}
+        switch over to/checkout the \textbf{target} branch, pull from the remote repository to ensure your local repository is up to date; check to ensure there are no merge conflicts, and commit any changes as needed
+        \begin{itemize}
+          \item if there are any merge conflicts, notify the relevant team members and resolve them before continuing
+          \item coordinate with team members to avoid having them push other changes to the \textbf{target} branch as you are merging ready code/resolving merge conflicts
+        \end{itemize}
+      \end{item}
+      \item merge the work from your \textbf{personal} branch onto the \textbf{target} branch, and resolve any merge conflicts
+      \begin{item}
+        commit and push your merged work to the \textbf{target} branch’s remote repository
+        \begin{itemize}
+          \item it is good to notify all developers using the \textbf{target} branch (or all developers if the \textbf{target} branch is the \textbf{main} branch) that you are pushing
+        \end{itemize}
+      \end{item}
+    \end{enumerate}
+  \end{item}
+
+  \begin{item}
+    merging ready documentation deliverables work into the \textbf{main} branch will work as follows:
+    \begin{enumerate}
+      \item do the \textbf{documentation deliverables} work on a file separate from the shared documentation deliverable file (unless you will be the first person to merge your work to the \textbf{documentation deliverable} branch)
+      \item coordinate with other team members to ensure that only one member will be pushing their changes to the remote repository
+      \item pull from the \textbf{documentation deliverables work} branch’s remote repository, and ensure your local copy matches the one on the remote repository
+      \item add your changes into the \textbf{shared} documentation deliverables file and commit those changes
+      \item check with other team members and get the okay to push changes to the remote repository
+      \item once the okay has been given, push your work to the remote repository, and ensure all team members can see the changes made and have pulled the changes to their local repositories \textbf{before} they add their changes to the same file
+      \item repeat steps 2-6 until all changes to the \textbf{documentation deliverables} file have been made by all team members
+      \begin{item}
+        check over the \textbf{documentation deliverables} file, and merge the \textbf{documentation deliverables work} branch into the \textbf{main} branch once the team okay has been given
+        \begin{itemize}
+          \item the documentation deliverables work will bypass the \textbf{develop} branch when being merged into the \textbf{main} branch
+          \item the \textbf{develop} branch will be synchronized with the \textbf{main} branch, and will thus be regularly updated with the documentation deliverables work that has been completed
+        \end{itemize}
+      \end{item}
+    \end{enumerate}
+  \end{item}
+\end{itemize}
+
+\subsection{Tags and Milestones}
+\begin{itemize}
+  \item tags will be used to mark milestones in the project’s code development
+  \item the initial version tags will be “v1.0”
+  \item milestones will be determined based on the Gantt Chart
+  \item additional milestones may be created throughout development, ideally with unanimous team agreement
+\end{itemize}
+
+\section{Proof of Concept Demonstration Plan}
+\subsection{Project Size}
+The original repository for pagan contains around 900 lines of code, which originally was a concern of being too small of a project to pursue over the term.
+However, by greatly expanding the generation possibilities (ie. many different flag options), and by building a grpahical user interface for generating the image, the scope
+of the project will be large enough for the term. Beyond implementing these features, code documentation, organization, and modularity will also be enhanced. 
+\subsection{Testing}
+Given the graphical nature of this project (generating image files from an input string), testing whether or not 2 images are the same or not will likely require the use of external libraries.
+Some research will be into seeing if image comparison can be done using libraries such as openCV and numpy, thus allowing for automated testing of image equality. If automated testing for image similarity
+is not feasible, then a manual/visual inspection method of testing will need to be used. Additionally, checking the quality of the generated images, and testing of the GUI will likely need to be done through manual inspection.
+However, all other components of the project (ie. hashing, string input, etc.) will be tested in an automated fashion.
+
+\section{Technology}
+\subsection{Programming Language}
+Python 3 will be the language used for the project as the original source project is written in Python, and it is a language all members of the team are familiar with.
+Additionally, Python has many libraries (hashing, graphics, etc.) that will be useful/nice-to-have as well as necessary to complete the project. 
+\subsection{IDE}
+The group will use PyCharm as the main IDE for the project. This is an IDE that was developed specifically for use with the Python language and has built-in features that will support and aid in the development process (ie. detailed UI).
+However, if a group member is more familiar and productive with another IDE, then that IDE will be used by that member.
+\subsection{Testing Framework}
+This project will use the Python unittest library for unit testing. This framework allows for test automation, efficient setup/cleanup code and modularized testing. Additionally, group members have worked with
+the unittest framework before.
+unittest documentation: \href{https://docs.python.org/3/library/unittest.html}{https://docs.python.org/3/library/unittest.html}
+\subsection{Program for Document Generation}
+The tool used for document generation will be Doxygen, which will generate the required code documents using the annotations (comments) included in the code.
+Doxygen documentation: \href{https://www.doxygen.nl/index.html}{https://www.doxygen.nl/index.html}
+\section{Coding Style}
+A PEP-8 coding style will be followed for this project. All naming and commenting conventions will be adhered to, as well as other guidelines set out by the PEP-8 standard.
+PEP-8 documentation: \href{https://www.python.org/dev/peps/pep-0008/}{https://www.python.org/dev/peps/pep-0008/}
+\section{Project Schedule}
+
+The Project Schedule Gantt chart can be found at the following location:\\
+../ProjectSchedule/3XA3\_L01\_GRP02\_Gantt\_Chart.pdf
+
+\section{Project Review}
+\textcolor{red}{As a group, Group 2 has successfully implemented the Random Flag Generator program based on the open source project, PAGAN.
+Given the initially determined goals and areas for improvement (from PAGAN) that were to be implemented by the Random Flag Generator, it was determined that
+the Random Flag Generator has successfully met the desired outcomes for this project. Random Flag Generator developed a user-friendly GUI,
+integrated a flag gallery feature, greatly expanded the testing coverage, and improved the modularity of the program. Additionally,
+Random Flag Generator incorporated a wider array of available assets, including options for graphic quality (high, medium, low).
+The use of the tkinter graphics library and pytest framework, helped achieve these goals.}
+
+\textcolor{red}{In the Final Demonstration of the Random Flag Generator, it was able to handle ad-hoc user input from the audience,
+generate both fully randomized and semi-randomized flags, at all 3 possible image qualities. All functional requirements that were outlined 
+in the Software Requirements Specification were able to be met in the program implementation. Some of the non-functional requirements still require more 
+testing and usability surveys, before being able to confidently say that those requirements were fully met.} 
+
+\textcolor{red}{One of the major additions that were made in Random Flag Generator compared to PAGAN, was the addition of a GUI.
+Through the GUI, a user is able to interact with all available features of the program including flag generation, a flag gallery, a help page, and settings.
+Additionally, the source project only had 4 modules, which was expanded to 11 modules to promote improved readabilitiy, maintainability and ensuring low coupling and high cohesion.
+Improvements and additions that the team would like to see implemented in future versions of Random Flag Generator are: an online version, wider asset possibilities, inclusion of 
+more hashing algorithms, more user control over output, and further enhancements to the GUI.}
+
+\textcolor{red}{The group worked very effectively as a team, and were able to complete all the various parts of the project. Work was distributed evenly throughout the term, and in the case that one
+member inadvertently took on a larger than expected task, the other group members readily accommodated and adjusted workloads dynamically.
+The group was constantly communicating, mainly through a Teams groupchat, and decisions were able to be made quickly and with full group consensus.
+Meetings were also scheduled outside of the pre-determined extra weekly meeting, especially around large deliverable deadlines. Team meetings were
+well organized and efficient, regardless of whether it was a virtual or in-person meeting. The group acknowledges the many positive advantages of working in a hybrid manner
+and being flexible to both online or in-person meetings, such as easier rescheduling and collaborative debugging.}
+
+\textcolor{red}{Overall, the Random Flag Generator was a successful project as all desired features were fully implemented. With that being said, 
+there are multiple features that can be considered for future implementation. All group members were fully involved in all aspects of the software development cycle, and learned
+about all the necessary documentation and iterations that should take place for a complete and successful final product.}
+\end{document}

@@ -1,0 +1,1923 @@
+\documentclass[12pt, titlepage]{article}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[section]{placeins}
+\usepackage{hhline}
+\usepackage{lscape}
+\usepackage{hyperref}
+\usepackage[normalem]{ulem}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=red,
+    urlcolor=blue
+}
+\usepackage[round]{natbib}
+
+\usepackage{xifthen}
+\def\namedlabel#1#2{\begingroup
+    #2%
+    \def\@currentlabel{#2}%
+    \phantomsection\label{#1}\endgroup
+}
+\newcommand{\newterm}[1]{\label{Term:#1} \MakeUppercase #1}
+\newcommand{\term}[2][]{\ifthenelse{\equal{#1}{}}{\hyperref[Term:#2]{\textbf{#2}}}{\hyperref[Term:#1]{\textbf{#2}}}}
+
+\title{SE 3XA3: Test Plan\\Random Flag Generator}
+
+\author{Team \#2, Team Jakriel
+		\\ Akram Hannoufa, hannoufa
+		\\ Ganghoon (James) Park, parkg10
+		\\ Nathaniel Hu, hun4
+}
+
+\date{\today}
+
+% \input{../Comments}
+
+\begin{document}
+
+\maketitle
+
+\pagenumbering{roman}
+\tableofcontents
+\listoftables
+
+\newpage
+\begin{table}[h]
+\caption{\bf Revision History}
+\begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
+\toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
+\midrule
+March 3, 2022 & 1.0 & Initial Document\\
+March 3, 2022 & 1.1 & Added initial draft of Tests for Proof of Concept section\\
+March 8/9, 2022 & 1.2 & Made edits to draft of Tests for Proof of Concept section; Added initial draft of System Test Description section\\
+March 10, 2022 & 1.3 & Made edits, added to draft of Tests for Proof of
+Concept section; Added to draft of System Test Description section\\
+March 11, 2022 & 1.4 & Added Comparison to Existing Implementation, Unit Testing Plan and Appendix sections content; made edits\\
+\textcolor{red}{April 11/12, 2022} & \textcolor{red}{2.0} & \textcolor{red}{Updated Test Plan documentation for Revision 1 submission}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage
+
+\pagenumbering{arabic}
+
+\noindent This document describes the plan for the software testing of the \textbf{Random Flag Generator} program.
+
+\section{General Information}
+
+\subsection{Purpose}
+The purpose of this test plan is to describe the testing and validation
+process of The Random Flag Generator \textcolor{red}{(\term[RFG]{RFG})} in
+detail. This test plan will properly assess the \textcolor{red}{
+\term[FR]{functional}} and \textcolor{red}{\term[NFR]{non-functional
+requirements}} of the software as well as its performance and usability. The
+\textcolor{red}{\term[Test Case]{test cases}} will address each individual
+unit of source code and can be referred to or updated with future
+implementations. The test plan aims to minimize the probability of errors
+occuring when being run by the \textcolor{red}{\term[User]{user}}.
+
+\subsection{Scope}
+The test plan considers and tests all \textcolor{red}{\term[FR]{functional}}
+and \textcolor{red}{\term[NFR]{non-functional requirements}} through different
+testing procedures. Proof of concept tests are also demonstrated. In addition,
+the Random Flag Generator program is compared to the existing \textcolor{red}{
+\term[PAGAN]{PAGAN}} implementation, and is discussed to compare its
+functionality and improve the design. The unit testing plan for internal
+functions and output files is also outlined. Finally, the usability survey 
+questions will evaluate user experience(s). The test plan will be conducted
+accordingly, and the document will be revised as the project's development
+progresses.
+
+\newpage
+\subsection{Acronyms, Abbreviations, and Symbols}
+    
+\begin{table}[htbp]
+\caption{\textbf{Table of Abbreviations}} \label{abbrev}
+
+\begin{tabularx}{\textwidth}{p{3cm}X}
+\toprule
+\textbf{Abbreviation} & \textbf{Definition} \\
+\midrule
+\newterm{FR} & Functional Requirement\\
+\hline
+\newterm{GUI} & Graphical User Interface\\
+\hline
+\newterm{LF} & Look and Feel test\\
+\hline
+\textcolor{red}{\newterm{NFR}} & \textcolor{red}{\term{Non-Functional Requirement}}\\
+\hline
+\newterm{PAGAN} & \term{Python Avatar Generator for Absolute Nerds}\\
+\hline
+\newterm{PE} & Performance test\\
+\hline
+\textcolor{red}{\newterm{RFG}} & \textcolor{red}{\term{Random Flag Generator}}\\
+\hline
+\newterm{RGB} & Red Green Blue\\
+\hline
+\newterm{SRS} & Software Requirements Specification\\
+\hline
+\newterm{UH} & Usability and Humanity test\\
+\hline
+\newterm{UI} & User Interface\\
+\bottomrule
+\end{tabularx}
+
+\end{table}
+
+\newpage
+\begin{table}[htbp]
+\caption{\textbf{Table of Definitions}} \label{def}
+
+\begin{tabularx}{\textwidth}{p{3cm}X}
+\toprule
+\textbf{Term} & \textbf{Definition}\\
+\midrule
+\newterm{Gallery} & Collection of previously generated flags.\\
+\hline
+\newterm{Graphical User Interface} & A form of UI that allows users to use
+  electronic devices using interactive graphics.\\
+\hline
+\newterm{Hashing} & Algorithm that converts input data to a fixed-size value.
+  A hashing function usually outputs a string or hexadecimal value.\\
+\hline
+\newterm{Input String} & The input of type string from the user.\\
+\hline
+\newterm{Pytest} & Python testing tool that allows testers to write test code
+  and create simple and scalable test cases.\\
+\hline
+\newterm{Python} & The programming language used in this project.\\
+\hline
+\newterm{Software Requirements Specification} & A document that details what
+  the program/software will do and how it will accomplish the expected
+  performance/tasks.\\
+\hline
+\newterm{System/Program} & Collection of instructions or components that tell
+  a computer how to operate.\\
+\hline
+\newterm{Tester} & An individual testing the software via the user interface
+  or the code/test cases.\\
+\hline
+\textcolor{red}{\newterm{Test Case}} & \textcolor{red}{a specification of
+  inputs, execution conditions, producedure and expected results for testing a
+  program's behaviour.}\\
+\hline
+\newterm{Typeform} & Website that is a software as a service that specializes
+  in creating and building online surveys.\\
+\hline
+\newterm{User} & Person who uses or operates a computer program.\\
+\hline
+\newterm{User Interface} & Where interactions between machines and humans
+  occur.\\
+\bottomrule
+\end{tabularx}
+    
+\end{table} 
+
+\newpage
+\FloatBarrier
+\subsection{Overview of Document}
+The test plan describes how the team is going to test the software and what
+automated testing tools will be used. All \textcolor{red}{
+\term[FR]{functional}} and most \textcolor{red}{\term[NFR]{non-functional
+requirements}} included in the \textcolor{red}{\term[SRS]{SRS}} will be
+tested. Proof of concept tests, as well as comparisons to the existing
+\textcolor{red}{\term[PAGAN]{PAGAN}} implementation, unit testing, and
+usability survey questions are also described.
+
+\section{Plan}
+    
+\subsection{Software Description}
+The Random Flag Generator \textcolor{red}{(\term[RFG]{RFG})} is a
+user-friendly software that allows users to uniquely create a personalized
+randomly generated flag based on the entered input string. It is built using
+Python and is inspired by \textcolor{red}{\term[PAGAN]{PAGAN}}, an open source
+project that randomly generates an avatar from an input string. The user will
+be able to select different hash functions and specify different features of
+the flag, such as changing the flag image resolution and including certain
+symbols, colour\textcolor{red}{s}, and stripes. It will also have a flag
+\textcolor{red}{\term[Gallery]{gallery}} that lets users look through
+previously created flags.
+
+\subsection{Test Team}
+All members of \textcolor{red}{Group \sout{group}} 2 are responsible for
+creating, executing, and documenting tests described in this document, as well
+as any new tests that are created later. The testing team is comprised of:
+\begin{itemize}
+    \item Akram Hannoufa
+    \item Ganghoon (James) Park
+    \item Nathaniel Hu
+  \end{itemize}  
+Upon completing the final stage of development, TAs, students, and other
+volunteers would be asked to provide feedback through the usability survey
+questions.
+
+\subsection{Automated Testing Approach}
+To review and validate the software product, automated testing for each output
+will be conducted. It will be performed automatically by running the
+\textcolor{red}{\term[Test Case]{test case}} set. The hash functions along
+with the flag generator functions will be tested automatically to ensure that
+the input string gives the expected output string and that the result is
+repeatable.
+
+\subsection{Testing Tools}
+The main software testing framework that will be used is \textcolor{red}{
+\term[Pytest]{Pytest}}, which will allow testers to write \textcolor{red}{
+\term[Test Case]{test cases}} in \textcolor{red}{\term[Python]{Python}} and
+report the test results. It is a simple, efficient and effective way to handle
+increasingly complex testing requirements by creating simple unit tests.
+\textcolor{red}{\term[Typeform]{Typeform}} will be used to obtain feedback
+from different students, TAs, and other volunteers.
+
+\subsection{Testing Schedule}
+Please refer to the project Gantt chart: ../ProjectSchedule/3XA3Ganttchart.pdf
+
+\section{System Test Description}
+	
+\subsection{Tests for Functional Requirements}
+
+\subsubsection{User Interface Testing}
+		
+\paragraph{User Interface Test}
+
+\begin{enumerate}
+
+\item{FR-01\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is uninitialized
+
+Input: command to initialize and run the UI
+
+Output: UI is initialized
+
+How test will be performed: a command will be entered at the command line (by
+the \textcolor{red}{tester \sout{user}}). The Random Flag Generator main menu
+UI should open and allow the \textcolor{red}{tester \sout{user}} to enter text
+into the input string field. The main menu should also present buttons for the
+instructions, flag gallery and settings menus.
+
+\item{FR-02\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: mouse clicks on the instructions, flag gallery or settings menu
+buttons, or the appropriate keyboard strokes assigned to open each menu
+
+Output: the instructions, flag gallery or settings menu will be pulled up and
+can be viewed in its entirety
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then either click
+on the buttons or press the appropriate keyboard strokes to pull up each menu.
+
+\item{FR-03\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: keyboard strokes to (re)enter text into the input string field
+
+Output: text appears in the input string field
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then (re)enter
+text into the input string field.
+
+\item{FR-04-08\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: (text in input string field and) mouse click on generate flag button
+
+Output: flag will be generated using the input string and saved on the local
+machine (in \/generated\_flags directory)
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then click the
+generate flag button to start flag generation.
+
+\item{FR-05-09\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running, a flag has already finished
+generating
+
+Input: (text in the input string field and) mouse click on the display flag
+button.
+
+Output: generated flag with be displayed to the \textcolor{red}{tester
+\sout{user}} through the UI
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the The Flag Generator main menu UI already running and already have a flag
+generated, and then click the display flag button to display the flag in the
+UI.
+
+\item{FR-06-10\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running, a flag has already finished
+generating
+
+Input: (text in the input string field,) saved changes to the settings and
+mouse click on the display flag button
+
+Output: flag will be regenerated using the input string and changed settings,
+and saved on the local machine (in \/generated\_flags directory)
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running and already have a flag
+generated (and displayed). The \textcolor{red}{tester \sout{user}} then makes
+and saves some changes to the settings, and reruns the flag generation with the
+new settings in effect.
+
+\item{FR-07-11\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: (text in the input string field and) mouse click on the generate flag button.
+
+Output: flag will be generated using the input string and saved on the local
+machine (in \/generated\_flags directory) using the input string as its
+(default) name
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then click the
+generate flag button to start flag generation. The \textcolor{red}{tester
+\sout{user}} will then open up the flag gallery menu, and the new generated
+flag should be displayed there.
+
+\item{FR-12-13\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: mouse click on the instructions button, or the appropriate keyboard
+stroke assigned to open the instructions menu
+
+Output: the instructions menu will be pulled up and can be viewed in its
+entirety, and a button will be displayed that the \textcolor{red}{tester
+\sout{user}} can click on to close the instructions menu and return to the
+main menu
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then either click
+on the instructions button or press the appropriate keyboard stroke to pull up
+the instructions menu. After viewing the instructions menu, the
+\textcolor{red}{tester \sout{user}} will then click on the return to main menu
+button to close the instructions window and return to the main menu.
+
+\item{FR-14\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: mouse click on the settings button, or the appropriate keyboard stroke
+assigned to open the settings menu, and clicks/dragging to change settings
+
+Output: the settings menu will be pulled up where settings can be changed
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then either click
+on the settings button or press the appropriate keyboard stroke to pull up the
+settings menu and change settings.
+
+\item{FR-15\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: mouse click on the settings button, or the appropriate keyboard stroke
+assigned to open the settings menu
+
+Output: the settings menu will be pulled up where the flag generator version
+will be displayed
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then either click
+on the settings button or press the appropriate keyboard stroke to pull up the
+settings menu to confirm that the flag generator version number is displayed
+properly.
+
+\item{FR-16\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: mouse click on the settings button, or the appropriate keyboard stroke
+assigned to open the settings menu
+
+Output: the settings menu will be pulled up where a return to main menu button
+will be displayed that the \textcolor{red}{tester \sout{user}} can click on to
+close the settings menu and return to the main menu
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then either click
+on the settings button or press the appropriate keyboard stroke to pull up the
+settings menu. After viewing the settings menu, the \textcolor{red}{tester
+\sout{user}} will then click on the return to main menu button to close the
+instructions window and return to the main menu.
+
+\item{FR-17\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: mouse click on the flag gallery button, or the appropriate keyboard
+stroke assigned to open the flag gallery menu
+
+Output: the flag gallery menu will be pulled up where a list of all flags and
+the input strings used to generate them will be displayed
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then either click
+on the flag gallery button or press the appropriate keyboard stroke to pull up
+the flag gallery menu for viewing.
+
+\item{\textcolor{red}{\sout{FR-18}}\\}
+
+\textcolor{red}{\sout{Type: Functional, Dynamic, Manual}}
+
+\textcolor{red}{\sout{Initial State: UI is initialized and running}}
+
+\textcolor{red}{\sout{Input: mouse click on the flag gallery button, or the
+appropriate keyboard stroke assigned to open the flag gallery menu}}
+
+\textcolor{red}{\sout{Output: the flag gallery menu will be pulled up where an
+input string field will allow the user to search for flags by input string}}
+
+\textcolor{red}{\sout{How test will be performed: The user will have the
+Random Flag Generator main menu UI already running, and then either click on
+the flag gallery button or press the appropriate keyboard stroke to pull up
+the flag gallery menu. The user will then input text in the input string field
+to search for flags by input string.}}
+
+\item{FR-19\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: UI is initialized and running
+
+Input: mouse click on the flag gallery button, or the appropriate keyboard
+stroke assigned to open the flag gallery menu
+
+Output: the flag gallery menu will be pulled up where a button will be
+displayed that the \textcolor{red}{tester \sout{user}} can click on to close
+the flag gallery menu and return to the main menu
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will have
+the Random Flag Generator main menu UI already running, and then either click
+on the flag gallery button or press the appropriate keyboard stroke to pull up
+the flag gallery menu. After viewing the flag gallery menu, the
+\textcolor{red}{tester \sout{user}} will then click on the return to main menu
+button to close the flag gallery window and return to the main menu.
+
+\end{enumerate}
+
+\subsubsection{Output Testing}
+		
+\paragraph{Output Test}
+
+\begin{enumerate}
+
+\item{test\_get\_hash\_algo\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: input string of hashing algorithm name
+
+Output: hashlib hashing algorithm
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_get\_hash\_hex\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: input string to be used to generate flag, hashlib hashing algorithm
+
+Output: hash digest of input string in hexadecimal form
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_hash\_generator\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: input string to be used to generate flag
+
+Output: hash digest of input string in hexadecimal form
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_pad\_hashcode\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hash string to be used to generate flag
+
+Output: output hash string padded to minimum hash length
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{\textcolor{red}{test\_choose\_from\_list\\}}
+
+\textcolor{red}{Type: Functional, Dynamic, Automated}
+
+\textcolor{red}{Initial State:}
+
+\textcolor{red}{Input: list of elements, float value to determine an index to
+be used to select an element from the list}
+
+\textcolor{red}{Output: element from the list with index larger than and
+closest to input float value}
+
+\textcolor{red}{How test will be performed: automatically by running the test
+program containing the test set}
+
+\item{\textcolor{red}{test\_map\_decision\\}}
+
+\textcolor{red}{Type: Functional, Dynamic, Automated}
+
+\textcolor{red}{Initial State:}
+
+\textcolor{red}{Input: three numerical values representing the maximum
+possible option, the number of possible decisions and the digit to map within
+the possible options}
+
+\textcolor{red}{Output: float index value to be used to decide which element
+to select (presumably from a list)}
+
+\textcolor{red}{How test will be performed: automatically by running the test
+program containing the test set}
+
+\item{\textcolor{red}{test\_split\_sequence\\}}
+
+\textcolor{red}{Type: Functional, Dynamic, Automated}
+
+\textcolor{red}{Initial State:}
+
+\textcolor{red}{Input: input string, integer value specifying the length of
+the substrings to be split from the input string}
+
+\textcolor{red}{Output: list of substrings from the input string with as many
+substrings of the specified length as possible}
+
+\textcolor{red}{How test will be performed: automatically by running the test
+program containing the test set}
+
+\item{test\_grind\_hash\_for\_colors\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hash string to be used to generate flag
+
+Output: list of five colors' RGB values (R, G, B)
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_grind\_hash\_for\_\textcolor{red}{base\_}stripe\_style\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hash string to be used to generate flag
+
+Output: output string of \textcolor{red}{base} stripe style to be used to
+generate flag
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{\textcolor{red}{test\_grind\_hash\_for\_overlay\_stripe\_style\\}}
+
+\textcolor{red}{Type: Functional, Dynamic, Automated}
+
+\textcolor{red}{Initial State:}
+
+\textcolor{red}{Input: output hash string to be used to generate flag}
+
+\textcolor{red}{Output: output string of overlay stripe style to be used to
+generate flag}
+
+\textcolor{red}{How test will be performed: automatically by running the test
+program containing the test set}
+
+\item{test\_grind\_hash\_for\_stripe\_number\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hash string to be used to generate flag
+
+Output: output string of stripe number to be used to generate flag
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_grind\_hash\_for\_symbol\_locations\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hash string to be used to generate flag
+
+Output: output string of symbol location to be used to generate flag
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_grind\_hash\_for\_symbol\_number\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hash string to be used to generate flag
+
+Output: output string of symbol number to be used to generate flag
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_grind\_hash\_for\_symbol\_types\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hash string to be used to generate flag
+
+Output: output string of symbol type to be used to generate flag
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test\_hex2rgb\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: output hexidecimal color code string to be used to generate flag
+
+Output: output tuple of RGB values for color derived from heximdecimal color
+code string to be used to generate flag
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{\textcolor{red}{test\_diff\\}}
+
+\textcolor{red}{Type: Functional, Dynamic, Automated}
+
+\textcolor{red}{Initial State:}
+
+\textcolor{red}{Input: two float values}
+
+\textcolor{red}{Output: absolute value of the difference between the two given
+float values}
+
+\textcolor{red}{How test will be performed: automatically by running the test
+program containing the test set}
+
+\item{test\_generate\_flag\\}
+
+Type: Functional, Dynamic, \textcolor{red}{Automated \sout{Manual}}
+
+Initial State:
+
+Input: input string, hashing algorithm name string \textcolor{red}{and
+dictionary of settings (i.e. chosen colours, elements)} to be used to generate
+flag
+
+Output: generated flag image file
+
+How test will be performed: \textcolor{red}{automatically by running the test
+program containing the test set \sout{manually by running the test program
+containing the test set, and then doing a manual visual comparison of the
+generated flag with its expected generated flag output}}
+
+\item{test\_generate\_flag\_data\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: input string, hashing algorithm name string to be used to generate flag
+
+Output: tuple consisting of list of 5 tuples of RGB values, tuple of stripe
+style, number and tuple of symbol location, number and type
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{\textcolor{red}{test\_parse\_jka\_file\\}}
+
+\textcolor{red}{Type: Functional, Dynamic, Automated}
+
+\textcolor{red}{Initial State:}
+
+\textcolor{red}{Input: input string of flag asset (.jka) file name to be
+parsed for pixel data}
+
+\textcolor{red}{Output: list consisting of tuples of (x, y) coordinates of the
+position of all filled pixels that compose the selected flag asset}
+
+\textcolor{red}{How test will be performed: automatically by running the test
+program containing the test set}
+
+\end{enumerate}
+
+\subsection{Tests for Nonfunctional Requirements}
+
+\subsubsection{Look and Feel Testing}
+		
+\paragraph{Appearance Test}
+
+\begin{enumerate}
+
+\item{LF-01\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of UI simplicity, intuitivity, and clutterlessness
+
+How test will be performed: The Random Flag Generator UI will be analyzed for
+how simple, intuitive and non-cluttered it is for users by several
+\textcolor{red}{testers \sout{users}}. The \textcolor{red}{testers
+\sout{users}} will provide their answer to question 1 of the Usability Survey.
+Their responses will be assessed to determine if the UI is simple, intuitive
+and not cluttered.
+
+\end{enumerate}
+
+\paragraph{Style Test}
+
+\begin{enumerate}
+
+\item{LF-02\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: input string, hashing algorithm name string to generate a
+flag
+
+Output/Result: flag generated using input string and hashing algorithm
+
+How test will be performed: The \textcolor{red}{testers \sout{users}} will
+enter input strings and hashing algorithm string names to generate flags. The
+\textcolor{red}{testers \sout{users}} will then review the generated flags for
+image quality and aesthetics, and provide their answer to question 2 of the
+Usability Survey. Their responses will be assessed to gauge how aesthetically
+pleasing the generated flags look to the users.
+
+\item{LF-03\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: input string, hashing algorithm name string to generate a
+flag
+
+Output/Result: flag generated using input string and hashing algorithm
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will
+enter an input string and hashing algorithm string name to generate a flag.
+\textcolor{red}{The \sout{Then} tester \sout{user}} will then review the
+generated flag to ensure the colours used are within certain colour ranges.
+
+\item{LF-04\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: input string, hashing algorithm name string to generate a
+flag
+
+Output/Result: flag generated using input string and hashing algorithm
+
+How test will be performed: The \textcolor{red}{tester \sout{user}} will enter
+an input string and hashing algorithm string name to generate a flag.
+\textcolor{red}{The \sout{Then} tester \sout{user}} will then review the
+generated flag to ensure all flag components are visible in the generated
+image.
+
+\end{enumerate}
+
+\subsubsection{Usability and Humanity Testing}
+
+\paragraph{Ease of Use Test}
+
+\begin{enumerate}
+
+\item{UH-01\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of the logical flow of the UI components
+
+How test will be performed: The Random Flag Generator UI will be analyzed for
+the logical flow of the UI components by several \textcolor{red}{testers
+\sout{users}}. The \textcolor{red}{testers \sout{users}} will then provide
+their answer to question 3 of the Usability Survey. Their responses will be
+assessed to determine if the UI components flow follow a logical flow.
+
+\item{UH-02\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification that all tasks can be done within one interface
+
+How test will be performed: Various tasks will be performed (e.g. reading the
+instructions, changing the settings) \textcolor{red}{by testers} to ensure all
+tasks can be done within one interface, and that no tasks need interactions
+with more than one interface to be completed.
+
+\item{UH-03\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification that the Random Flag Generator is easy to use for
+people aged \textcolor{red}{$\hyperlink{min_age}{MIN\_AGE}$ \sout{7}} or older
+
+How test will be performed: Various tasks will be performed (e.g. reading the
+instructions, changing the settings) \textcolor{red}{by testers} to ensure all
+tasks can be easily understood and completed by people aged \textcolor{red}{
+$\hyperlink{min_age}{MIN\_AGE}$ \sout{7}} or older.
+
+\item{\textcolor{red}{\sout{UH-04}}\\}
+
+\textcolor{red}{\sout{Type: Manual, Dynamic}}
+
+\textcolor{red}{\sout{Initial State: UI is initialized and running}}
+
+\textcolor{red}{\sout{Input/Condition:}}
+
+\textcolor{red}{\sout{Output/Result: verification that all keyboard inputs to
+perform actions are intuitive for users}}
+
+\textcolor{red}{\sout{How test will be performed: Various tasks will be
+performed (e.g. reading the instructions, changing the settings) to ensure all
+tasks can be easily understood and completed using keyboard inputs that are
+intuitive and easy to remember and use.}}
+
+\end{enumerate}
+
+\paragraph{Personalization Test}
+
+\begin{enumerate}
+
+\item{UH-05\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of the modifiability of output specifications for
+flag generation (e.g. type of hashing, image file, etc.)
+
+How test will be performed: The Random Flag Generator UI will be analyzed by
+several \textcolor{red}{testers \sout{users}} to ensure the output
+specifications for flag generation can (easily) be modified. The
+\textcolor{red}{testers \sout{users}} will then provide their answer to
+question 5 of the Usability Survey. Their responses will be assessed to
+determine how much more or less ability the users should have to set certain
+parts of the generated flag.
+
+\item{\textcolor{red}{\sout{UH-06}}\\}
+
+\textcolor{red}{\sout{Type: Manual, Functional, Dynamic}}
+
+\textcolor{red}{\sout{Initial State: UI is initialized and running}}
+
+\textcolor{red}{\sout{Input/Condition:}}
+
+\textcolor{red}{\sout{Output/Result: verification of the modifiability of the
+flag gallery}}
+
+\textcolor{red}{\sout{How test will be performed: The Random Flag Generator UI
+will be analyzed by several users to ensure the flag gallery can (easily) be
+modified (i.e. add, delete flags). The users will then provide their answer to
+question 6 of the Usability Survey. Their responses will be assessed to
+determine the value of and ease of use of the flag gallery.}}
+
+\end{enumerate}
+
+\paragraph{Learning Test}
+
+\begin{enumerate}
+
+\item{UH-07\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of the learnability of the Random Flag Generator
+program
+
+How test will be performed: The Random Flag Generator UI will be analyzed by
+several users to ensure they can learn to use the program with no prior
+experience. The users with no prior experience will also attempt to use the
+program \textcolor{red}{\sout{(and 85\% of users should be able to with
+ease)}}. The users will then provide their answer to question 8 of the
+Usability Survey. Their responses will be assessed to determine what parts of
+the GUI were unclear or could be improved.
+
+\item{UH-08\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of the accessibility of the instructions menu
+
+How test will be performed: The Random Flag Generator UI will be analyzed by
+several users to ensure they can (easily) access the instruction menu for
+help. The users will also attempt to use the program (and \textcolor{red}{
+\sout{85\% of users}} should be able to pull up the instructions menu within
+\textcolor{red}{$\hyperlink{max_find_time}{MAX\_FIND\_TIME}$ \sout{5}
+seconds)}. The users will then provide their answer to question 4 of the
+Usability Survey. Their responses will be assessed to determine if the
+instructions/help menu button was helpful to users or not and how it could be
+improved.
+
+\item{UH-09\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of the intuitivity/informativeness of the main UI
+
+How test will be performed: The Random Flag Generator UI will be analyzed by
+several \textcolor{red}{testers \sout{users}} to ensure the user can (easily)
+use the program by following the main UI instructions. A sample group of users
+will also attempt to use the program (and \textcolor{red}{\sout{85\% of
+users}} should be able to do so just using the main UI instructions).
+
+\end{enumerate}
+
+\paragraph{Understandability Test}
+
+\begin{enumerate}
+
+\item{UH-10\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of consistent language use throughout the program
+
+How test will be performed: The Random Flag Generator UI will be analyzed
+\textcolor{red}{by testers} to ensure that consistent language is used
+throughout the program.
+
+\item{UH-11\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: 
+
+Output/Result: verification of simplified terminology being used wherever
+possible
+
+How test will be performed: The Random Flag Generator UI will be analyzed
+\textcolor{red}{by testers} to ensure that simplified terminology is used
+wherever possible in the program.
+
+\end{enumerate}
+
+\paragraph{Accessibility Test}
+
+\begin{enumerate}
+
+\item{UH-12\\}
+
+Type: Manual, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition:
+
+Output/Result: verification of easy-to-read fonts and font sizes being used
+throughout the program
+
+How test will be performed: The Random Flag Generator UI will be analyzed
+\textcolor{red}{by testers} and compared with the web accessibility standards
+to ensure that easy-to-read fonts and font sizes are used throughout the
+program.
+
+\item{\textcolor{red}{\sout{UH-13}}\\}
+
+\textcolor{red}{\sout{Type: Manual, Dynamic}}
+
+\textcolor{red}{\sout{Initial State: UI is initialized and running}}
+
+\textcolor{red}{\sout{Input/Condition:}}
+
+\textcolor{red}{\sout{Output/Result: verification of a colour-blind friendly
+Random Flag Generator UI}}
+
+\textcolor{red}{\sout{How test will be performed: The Random Flag Generator UI
+will be analyzed to ensure that a colour-blind friendly UI is provided.}}
+
+\end{enumerate}
+
+\subsubsection{Performance Testing}
+
+\paragraph{Speed Test}
+
+\begin{enumerate}
+
+\item{PE-01-02\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: input string and hashing algorithm name string to generate
+flag, mouse click
+
+Output/Result: output generated flag image
+
+How test will be performed: The Random Flag Generator program will be given an
+input string and hashing algorithm name string, and the time it takes to
+generate/download a flag image shall be timed. The generation and download
+time shall not exceed \textcolor{red}{
+$\hyperlink{max_load_time}{MAX\_LOAD\_TIME}$ \sout{5}} seconds.
+
+\item{PE-03\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: mouse click
+
+Output/Result: user's flag gallery should be loaded in the UI
+
+How test will be performed: The Random Flag Generator UI program will open the
+user's flag gallery and the duration shall be timed. The loading time shall
+not exceed \textcolor{red}{$\hyperlink{max_load_time}{MAX\_LOAD\_TIME}$
+\sout{5}} seconds.
+
+\end{enumerate}
+
+\paragraph{Precision or Accuracy Test}
+
+\begin{enumerate}
+
+\item{PE-04\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: input string and hashing algorithm name string to generate
+flag
+
+Output/Result: output hexadecimal hash digest (per the selected hashing
+algorithm)
+
+How test will be performed: The Random Flag Generator program will be given an
+input string and hashing algorithm name string, and the output hexadecimal
+hash digest (per the selected hashing algorithm) will be compared with the
+hash digest generated with the input string using an external hashing program.
+
+\item{PE-05\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: input string and hashing algorithm name string to generate
+flag, mouse click
+
+Output/Result: output generated flag image
+
+How test will be performed: The Random Flag Generator program will be given an
+input string and hashing algorithm name string, and the generated flag image
+will be analyzed to ensure the various components are accurately placed (i.e.
+they match the template files).
+
+\item{PE-06\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: UI is initialized and running
+
+Input/Condition: input string and hashing algorithm name string to generate
+flag, mouse click
+
+Output/Result: output generated flag image
+
+How test will be performed: The Random Flag Generator program will be given an
+input string and hashing algorithm name string, and the generated flag image
+will be analyzed to ensure the various colours used match the hexadecimal RGB
+colour values derived from the hash digest. The RGB volour values will be run
+through an external colour tool, and those colours will be compared with the
+generated flag's colours to ensure they match.
+
+\end{enumerate}
+
+\paragraph{Reliability and Availability Test}
+
+\begin{enumerate}
+
+\item{PE-07\\}
+
+Type: Manual, Dynamic
+
+Initial State: GUI is uninitialized
+
+Input/Condition: command to initialize and run the GUI
+
+Output/Result: GUI is initialized and running
+
+How test will be performed: The Random Flag Generator program will be
+initialized and run from the command line at several different times during
+the day to ensure its availability.
+
+\end{enumerate}
+
+\paragraph{Capacity Test}
+
+\begin{enumerate}
+
+\item{\textcolor{red}{\sout{PE-08}}\\}
+
+\textcolor{red}{\sout{Type: Manual, Functional, Dynamic}}
+
+\textcolor{red}{\sout{Initial State: UI is initialized and running, maximum
+number of generated flags currently stored in user's gallery}}
+
+\textcolor{red}{\sout{Input/Condition: input string and hashing algorithm name
+string to generate flag, mouse click}}
+
+\textcolor{red}{\sout{Output/Result: program displays an error message telling
+the user the maximum number of generated flags has been reached, and to delete
+flags in the gallery to make more space for new flags.}}
+
+\textcolor{red}{\sout{How test will be performed: The Random Flag Generator
+program will be running and the user will attempt to generate a new flag
+despite the gallery being full (i.e. the flag generation should fail and an
+error message should pop up).}}
+
+\item{PE-09\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: GUI is uninitialized
+
+Input/Condition: command to initialize and run the GUI
+
+Output/Result: GUI is initialized and running
+
+How test will be performed: The Random Flag Generator program will be
+initialized and run from the command line, and only one user is initialized
+per machine (i.e. all generated flags are stored in the same gallery/directory
+on the machine).
+
+\end{enumerate}
+
+\paragraph{Scalability or Extensibility Test}
+
+\begin{enumerate}
+
+\item{PE-10\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: GUI is uninitialized
+
+Input/Condition: a new hashing algorithm/function option is added, command to
+initialize and run the GUI
+
+Output/Result: program should be able to generate new flags using the new
+hashing algorithm/function without any changes needing to be made to the
+existing code.
+
+How test will be performed: A new hashing algorithm/function will be added to
+the Random Flag Generator program, and then the GUI will be initialized. The
+user will attempt to generate a new flag using the new hashing algorithm and
+an input string, and the generated flag should be different from all of the
+other flags generated using that input string and all other existing hashing
+algorithms.
+
+\item{PE-11\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: GUI is uninitialized
+
+Input/Condition: new flag components are added (i.e. new .jka flag asset
+files), command to initialize and run the GUI
+
+Output/Result: program should be able to generate new flags using the new flag
+asset files with only minor to no changes being made to the existing code.
+
+How test will be performed: A new (or several) flag asset(s) will be added to
+the Random Flag Generator program, and then the GUI will be initialized. The
+users will attempt to generate a new flag using the new flag asset(s) with
+specific input strings (determining by trial and error), and the generated
+flag should use the new flag asset(s). The users will then provide their
+answer to question 7 of the Usability Survey. Their responses will be assessed
+to determine what new designs the users would like to see become available.
+
+\end{enumerate}
+
+\subsubsection{Operational and Environmental Testing}
+
+\paragraph{Expected Physical Environment Test}
+
+\begin{enumerate}
+
+\item{PE-13\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: GUI is uninitialized
+
+Input/Condition: local machine has Wi-Fi disabled, command to initialize and
+run the GUI
+
+Output/Result: GUI is initialized and running
+
+How test will be performed: The Random Flag Generator program will be
+initialized and run from the command line on a local machine with the Wi-Fi
+disabled. This program should still function as it would even with the Wi-Fi
+enabled.
+
+\item{PE-14\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: GUI is uninitialized
+
+Input/Condition: local machine can support (running) the Python language,
+command to initialize and run the GUI
+
+Output/Result: GUI is initialized and running
+
+How test will be performed: The Random Flag Generator program will be
+initialized and run from the command line on several different local machines
+that can support (running) the Python language. This program should still
+function the same on all the different local machines.
+
+\end{enumerate}
+
+\subsubsection{Interfacing with Adjacent Systems Testing}
+
+\paragraph{Interfacing with Adjacent Systems Test}
+
+\begin{enumerate}
+
+\item{PE-15\\}
+
+Type: Manual, Functional, Dynamic
+
+Initial State: GUI is uninitialized
+
+Input/Condition: command to initialize and run the GUI, user generates some
+flag(s)
+
+Output/Result: GUI is initialized and running, new flag(s) generated and saved
+to the user's local machine
+
+How test will be performed: The Random Flag Generator program will be
+initialized and run from the command line, and the user will attempt to
+generate some flag(s). The user will then check that the program has only
+created/altered files within its working directory (i.e. generated\_flags
+directory), and no where else on the local machine.
+
+\end{enumerate}
+
+\subsection{Traceability Between Test Cases and Requirements}
+
+In terms of traceability, most \textcolor{red}{\term[Test Case]{test cases}}
+and requirements have a one to one relationship, with exceptions and special
+cases noted. Some \textcolor{red}{\term[FR]{functional requirements}} are
+covered using the same tests, because they are essentially the same
+requirements, but are a part of different business events. See the following
+traceability matrices for more details.
+
+\begin{landscape}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Functional Requirements I}}
+\label{tab:trace_matrix_01}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{14}{c|}{Requirements} \\
+\hline
+Test Cases & FR1 & FR2 & FR3 & FR4 & FR5 & FR6 & FR7 & FR8 & FR9 & FR10 & FR11 & FR12 & FR13 & FR14 \\
+\hline
+FR-01 & X & & & & & & & & & & & & & \\
+\hline
+FR-02 & & X & & & & & & & & & & & & \\
+\hline
+FR-03 & & & X & & & & & & & & & & & \\
+\hline
+FR-04-08 & & & & X & & & & X & & & & & & \\
+\hline
+FR-05-09 & & & & & X & & & & X & & & & & \\
+\hline
+FR-06-10 & & & & & & X & & & & X & & & & \\
+\hline
+FR-07-11 & & & & & & & X & & & & X & & & \\
+\hline
+FR-12-13 & & & & & & & & & & & & X & X & \\
+\hline
+FR-14 & & & & & & & & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Functional Requirements II/Non-Functional Requirements I}}
+\label{tab:trace_matrix_02}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{14}{c|}{Requirements} \\
+\hline
+Test Cases & FR15 & FR16 & FR17 & \textcolor{red}{\sout{FR18}} & FR19 & LF1 & LF2 & LF3 & LF4 & UH1 & UH2 & UH3 & \textcolor{red}{\sout{UH4}} & UH5 \\
+\hline
+FR-15 & X & & & & & & & & & & & & & \\
+\hline
+FR-16 & & X & & & & & & & & & & & & \\
+\hline
+FR-17 & & & X & & & & & & & & & & & \\
+\hline
+\textcolor{red}{\sout{FR-18}} & & & & \textcolor{red}{\sout{X}} & & & & & & & & & & \\
+\hline
+FR-19 & & & & & X & & & & & & & & & \\
+\hline
+LF-01 & & & & & & X & & & & & & & & \\
+\hline
+LF-02 & & & & & & & X & & & & & & & \\
+\hline
+LF-03 & & & & & & & & X & & & & & & \\
+\hline
+LF-04 & & & & & & & & & X & & & & & \\
+\hline
+UH-01 & & & & & & & & & & X & & & & \\
+\hline
+UH-02 & & & & & & & & & & & X & & & \\
+\hline
+UH-03 & & & & & & & & & & & & X & & \\
+\hline
+\textcolor{red}{\sout{UH-04}} & & & & & & & & & & & & & \textcolor{red}{\sout{X}} & \\
+\hline
+UH-05 & & & & & & & & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Non-Functional Requirements II}}
+\label{tab:trace_matrix_03}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{14}{c|}{Requirements} \\
+\hline
+Test Cases & \textcolor{red}{\sout{UH6}} & UH7 & UH8 & UH9 & UH10 & UH11 & UH12 & \textcolor{red}{\sout{UH13}} & PE1 & PE2 & PE3 & PE4 & PE5 & PE6 \\
+\hline
+\textcolor{red}{\sout{UH-06}} & \textcolor{red}{\sout{X}} & & & & & & & & & & & & & \\
+\hline
+UH-07 & & X & & & & & & & & & & & & \\
+\hline
+UH-08 & & & X & & & & & & & & & & & \\
+\hline
+UH-09 & & & & X & & & & & & & & & & \\
+\hline
+UH-10 & & & & & X & & & & & & & & & \\
+\hline
+UH-11 & & & & & & X & & & & & & & & \\
+\hline
+UH-12 & & & & & & & X & & & & & & & \\
+\hline
+\textcolor{red}{\sout{UH-13}} & & & & & & & & \textcolor{red}{\sout{X}} & & & & & & \\
+\hline
+PE-01-02 & & & & & & & & & X & X & & & & \\
+\hline
+PE-03 & & & & & & & & & & & X & & & \\
+\hline
+PE-04 & & & & & & & & & & & & X & & \\
+\hline
+PE-05 & & & & & & & & & & & & & X & \\
+\hline
+PE-06 & & & & & & & & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Non-Functional Requirements III}}
+\label{tab:trace_matrix_03}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{8}{c|}{Requirements} \\
+\hline
+Test Cases & PE7 & \textcolor{red}{\sout{PE8}} & PE9 & PE10 & PE11 & PE13 & PE14 & PE15 \\
+\hline
+PE-07 & X & & & & & & & \\
+\hline
+\textcolor{red}{\sout{PE-08}} & & \textcolor{red}{\sout{X}} & & & & & & \\
+\hline
+PE-09 & & & X & & & & & \\
+\hline
+PE-10 & & & & X & & & & \\
+\hline
+PE-11 & & & & & X & & & \\
+\hline
+PE-13 & & & & & & X & & \\
+\hline
+PE-14 & & & & & & & X & \\
+\hline
+PE-15 & & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{landscape}
+
+\section{Tests for Proof of Concept}
+
+\subsection{Hash Generator}
+		
+\paragraph{test\_get\_hash\_algo}
+
+\begin{enumerate}
+
+\item{test-01\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: 'sha256'
+
+Output: hashlib.sha256
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\item{test-02\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: 'md5'
+
+Output: hashlib.md5
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_get\_hash\_hex}
+
+\begin{enumerate}
+
+\item{test-03\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: ‘test’, hashlib.sha256
+
+Output: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_hash\_generator}
+
+\begin{enumerate}
+
+\item{test-04\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: ‘sample'
+
+Output: 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\subsection{Hash To Flag}
+
+\paragraph{test\_pad\_hashcode}
+
+\begin{enumerate}
+
+\item{test-05\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: ‘575758’
+
+Output: '575758575758575758575758575758'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_grind\_hash\_for\_colors}
+
+\begin{enumerate}
+
+\item{test-06\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: ‘0396233d5b28eded8e34c1bf9dc80fae34756743594b9e5ae67f4f7d124d2e3d’
+
+Output: [(3, 150, 35), (61, 91, 40), (237, 237, 142), (52, 193, 191), (157,
+200, 15)]
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_grind\_hash\_for\_stripe\_style}
+
+\begin{enumerate}
+
+\item{test-07\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: '5555556c48be1c0b87a7d575c73f6e42fnfhasdf341123abadbdbd'
+
+Output: 'VERTICAL'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_grind\_hash\_for\_stripe\_number}
+
+\begin{enumerate}
+
+\item{test-08\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: '5555556c48be1c0b87a7d575c73f6e42fnfhasdf341123abadbdbd'
+
+Output: 'THREE'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_grind\_hash\_for\_symbol\_locations}
+
+\begin{enumerate}
+
+\item{test-09\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: '5555556c48be1c0b87a7d575c73f6e42fnfhasdf341123abadbdbd'
+
+Output: 'TOP\_LEFT'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_grind\_hash\_for\_symbol\_number}
+
+\begin{enumerate}
+
+\item{test-10\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: '5555556c48be1c0b87a7d575c73f6e42fnfhasdf341123abadbdbd'
+
+Output: 'ONE'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_grind\_hash\_for\_symbol\_types}
+
+\begin{enumerate}
+
+\item{test-11\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: ‘000010000100000010000000999999’
+
+Output: 'CROSS'
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\paragraph{test\_hex2rgb}
+
+\begin{enumerate}
+
+\item{test-12\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: '\#ffffff'
+
+Output: (255, 255, 255)
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\subsection{Flag Generator}
+
+\paragraph{test\_generate\_flag}
+
+\begin{enumerate}
+
+\item{test-13\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State:
+
+Input: 'Sword is pointy', 'sha256'
+
+Output: flag\_Sword is pointy.png
+
+How test will be performed: manually by running the test program containing
+the test set, and then doing a manual visual comparison of the generated flag
+with its expected generated flag output
+
+\end{enumerate}
+
+\paragraph{test\_generate\_flag\_data}
+
+\begin{enumerate}
+
+\item{test-14\\}
+
+Type: Functional, Dynamic, Automated
+
+Initial State:
+
+Input: 'test', 'sha256'
+
+Output: ([(159, 134, 208), (129, 136, 76), (125, 101, 154), (47, 234, 160),
+(197, 90, 208)], ('VERTICAL', 'THREE'), ('CENTER', 'ZERO', 'CROSS'))
+
+How test will be performed: automatically by running the test program
+containing the test set
+
+\end{enumerate}
+
+\subsection{GUI}
+
+\paragraph{test\_GUI}
+
+\begin{enumerate}
+
+\item{test-15\\}
+
+Type: Functional, Dynamic, Manual
+
+Initial State: GUI is uninitialized
+
+Input: command to initialize and run the GUI
+
+Output: GUI is initialized
+
+How test will be performed: a command will be entered at the command line (by
+the user). The Random Flag Generator main menu UI should open and allow the
+user to enter text into the input string field. The main menu should also
+present buttons for generating and displaying flags, which the user will then
+click on to test that they are functioning as prescribed.
+
+\end{enumerate}
+
+\section{Comparison to Existing Implementation}
+
+The Random Flag Generator \textcolor{red}{(\term[FRG]{RFG})} program currently
+implements the majority of the core functionality found in the original
+\textcolor{red}{\term[PAGAN]{PAGAN}} program. Mainly, the Random
+Flag Generator program currently implements hash generation using hashlib,
+mapping the \textcolor{red}{generated} hash \textcolor{red}{digest} to various
+flag design decisions (array indices), and generating the flag image. In
+addition, a minimal \textcolor{red}{\term[GUI]{GUI}} has been implemented to
+handle user input and display flag output. The next steps are expanding
+\textcolor{red}{\term[Test Case]{test cases}} and test coverage, implementing
+more flag design options (including more resolution choices), and enhancing
+the \textcolor{red}{\term[GUI]{GUI}}, which includes the addition of a flag
+gallery.
+
+\section{Unit Testing Plan}
+		
+\subsection{Unit testing of internal functions}
+
+The \textcolor{red}{\term[Pytest]{Pytest}} library will be used to carry out
+all unit testing for internal functions used in the Random Flag Generator
+\textcolor{red}{(\term[RFG]{RFG})} program. 5 \textcolor{red}{
+\term[Python]{Python}} files will be made that will contain the
+\textcolor{red}{\term[Pytest]{Pytest}} testing functions for the modules
+contained within each of the 5 main components of the project. FlagGenerator,
+GUI, HashGenerator, HashToFlag, and JKAReader will each have a corresponding
+\textcolor{red}{\term[Python]{Python}} \textcolor{red}{\term[Pytest]{Pytest}}
+file. Within each main component, most but not all internal functions are able
+to be unit tested. The others will require some manual testing. This is
+especially evident in the testing of the \textcolor{red}{\term[GUI]{GUI}},
+which will need to be done by the user to check functionality and usability
+requirements. \textcolor{red}{The remaining Display, Gallery, Settings
+and Help modules all need to be tested manually, since they are interaction-based
+\term[GUI]{GUI} modules.}\\
+
+\noindent For the modules that are able to be unit tested (modules mentioned
+in 3.1.2), assert statements will be setup to check that the modules are
+returning the correct values (based on externally calculated values), and that
+they are behaving as expected. The ``expected'' cases, boundary/limit cases,
+and any exceptions and error handling will be tested through \textcolor{red}{
+\term[Pytest]{Pytest}} unit tests. Using the testing coverage matrices, any
+unit testable \textcolor{red}{\term[FR]{functional requirements}} will be
+covered in the unit tests. Use of external libraries (PIL, tkinter) will have
+less thorough testing, since they are commercially available software products,
+and \textcolor{red}{are} assumed to have some level of correctness and
+\textcolor{red}{testing} already done \textcolor{red}{\sout{testing}}.
+
+\subsection{Unit testing of output files}
+
+\noindent \textcolor{red}{All \sout{Some}} aspects of the outputted flag image
+will be able to be validated through unit testing, \textcolor{red}{including
+the generated flag image files (which will be tested by comparing the pixel
+map colour data of the generated flag image with the expected pixel map colour
+data) \sout{but others will be a visual/manual check}}. \textcolor{red}{
+Generated flag \sout{Flag generated}} images will have their width and height
+checked to ensure the user's resolution selection matches the output image
+resolution. Checking known hashing function outputs to make sure the
+corresponding flag design (colours, symbols, stripes, etc.) are all correct,
+will be done to verify some correctness in the generated symbols, although it
+will be unreasonable to find hashes for every single combination of possible
+output designs. Unit tests can also be done to check the naming of files, file
+storage, and gallery display correctness.
+
+\bibliographystyle{plainnat}
+
+\bibliography{SRS}
+
+\newpage
+
+\section{Appendix}
+
+\subsection{Symbolic Parameters}
+The definition of the test cases will call for SYMBOLIC\_CONSTANTS. Their values are defined in this section for easy maintenance. \\ \\
+\textcolor{red}{$\hypertarget{min_age}{MIN\_AGE}$ = 7} \\
+\textcolor{red}{$\hypertarget{max_find_time}{MAX\_FIND\_TIME}$ = 5} \\
+\textcolor{red}{$\hypertarget{max_load_time}{MAX\_LOAD\_TIME}$ = 2} \\
+
+\subsection{Usability Survey Questions\textcolor{red}{\sout{?}}}
+
+Given that the Flag Generator program heavily relies on user input and their
+interactions with the GUI, as well as their opinion on the outputs of the
+program, survey questions to gauge user experience will be used.
+
+\begin{enumerate}
+    \item On a scale of 1-10, how easy was it for your to navigate the program
+    using the GUI?
+    \item On a scale of 1-10, how appealing/aesthetically pleasing would you
+    consider the flag images being generated?
+    \item On a scale of 1-10, how straightforward was it to follow the
+    intended flow of operations? (ie. entering input $\rightarrow$ accessing generated
+    flag image)
+    \item On a scale of 1-10, how helpful was the ``Help'' button feature?
+    \item Would you like more (or less) ability to set certain parts of the
+    flag?
+    \item Do you like having the flag gallery view? Is it worthwhile in your
+    opinion?
+    \item What other designs would you like to see available for the flags
+    being generated?
+    \item What parts of the GUI were not clear or straightforward to use?
+\end{enumerate}
+
+\end{document}

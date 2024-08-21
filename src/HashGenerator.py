@@ -1,8 +1,11 @@
 ## @file HashGenerator.py
 #  @title HashGenerator
 #  @brief A library module for getting the hexidecimal hash of a given string
+#  @details HashGenerator module, uses no other modules; no exported constants
+#           or types, no state or environment variables, no state invariant
+#           or assumptions
 #  @author Nathaniel Hu
-#  @date 2022-02-25
+#  @date 2022-03-31
 
 import hashlib
 import sys
@@ -16,7 +19,10 @@ import sys
 #  @return selected hashing algorithm if found; otherwise SHA-256 hashing
 #          algorithm returned
 def _get_hash_algo(hash_type):
-    hash_algos = {hash_algo: hashlib.new(hash_algo) for hash_algo in hashlib.algorithms_available}
+    # @var hash_algos
+    #  the dictionary of all hashing algorithms available on this local machine
+    hash_algos = {hash_algo: hashlib.new(hash_algo)
+                  for hash_algo in hashlib.algorithms_available}
     if hash_type in hash_algos:
         return hash_algos[hash_type]
     return hash_algos['sha256']
@@ -33,14 +39,19 @@ def _get_hash_algo(hash_type):
 #          using the given hashing algorithm
 def _get_hash_hex(hash_input, hash_algo):
     hash_input_bytes = bytes()
-    # specifies byte encoding depending on python version (2 or 3; may remove later?)
+    # specifies byte encoding depending on
+    # python version (2 or 3; may remove later?)
     if sys.version_info.major == 2:
         hash_input_bytes = bytes(hash_input)
     else:
         hash_input_bytes = bytes(hash_input, 'utf-8')
 
     hash_algo.update(hash_input_bytes)
-    return hash_algo.hexdigest()
+    try:
+        return hash_algo.hexdigest()
+    # included to specify hash digest length for shake hashing algorithms
+    except TypeError:
+        return hash_algo.hexdigest(32)
 
 
 ## @brief generates a hashing digest using the given input string and hashing
@@ -53,6 +64,8 @@ def _get_hash_hex(hash_input, hash_algo):
 #  @return hexidecimal hashing digest obtained from the given input string
 #          using the given hashing algorithm
 def hash_generator(hash_input, hash_type='sha256'):
+    # @var hash_algo
+    #  the hashing algorithm to be used to generate the hash digest from the
+    #  given input string
     hash_algo = _get_hash_algo(hash_type)
     return _get_hash_hex(hash_input, hash_algo)
-

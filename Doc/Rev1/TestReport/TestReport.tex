@@ -1,0 +1,1109 @@
+\documentclass[12pt, titlepage]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hhline}
+\usepackage{lscape}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=blue
+}
+\usepackage[round]{natbib}
+\usepackage{titlesec}
+\usepackage{placeins}
+\usepackage{graphicx}
+\usepackage{xkeyval}
+\usepackage[dvipsnames]{xcolor} % for different colour comments
+\usepackage{tabto}
+\usepackage{mdframed}
+\usepackage{lscape}
+\usepackage{multirow}
+
+
+\title{SE 3XA3: Test Report\\Random Flag Generator}
+
+\author{Team \#2, Team Jakriel
+		\\ Nathaniel Hu, hun4
+		\\ Ganghoon Park, parkg10
+		\\ Akram Hannoufa, hannoufa
+}
+
+\date{\today}
+
+\makeatletter
+
+\define@cmdkey      [TP] {test}     {name}       {}
+\define@cmdkey      [TP] {test}     {desc}       {}
+\define@cmdkey      [TP] {test}     {type}       {}
+\define@cmdkey      [TP] {test}     {init}       {}
+\define@cmdkey      [TP] {test}     {input}      {}
+\define@cmdkey      [TP] {test}     {output}     {}
+\define@cmdkey      [TP] {test}     {pass}       {}
+\define@cmdkey      [TP] {test}     {user}       {}
+\define@cmdkey      [TP] {test}     {result}     {}
+
+
+\newcommand{\getCurrentSectionNumber}{%
+  \ifnum\c@section=0 %
+  \thechapter
+  \else
+  \ifnum\c@subsection=0 %
+  \thesection
+  \else
+  \ifnum\c@subsubsection=0 %
+  \thesubsection
+  \else
+  \thesubsubsection
+  \fi
+  \fi
+  \fi
+}
+\newcounter{TestNum}
+
+
+\newcommand{\testauto}[1]{
+\setkeys[TP]{test}{#1}
+\refstepcounter{TestNum}
+\begin{mdframed}[linewidth=1pt]
+\begin{tabularx}{\textwidth}{@{}p{3cm}X@{}}
+{\bf Test \#\theTestNum:} & {\bf \cmdTP@test@name}\\[\baselineskip]
+{\bf Description:} & \cmdTP@test@desc\\[0.5\baselineskip]
+{\bf Type:} & \cmdTP@test@type\\[0.5\baselineskip]
+{\bf Initial State:} & \cmdTP@test@init\\[0.5\baselineskip]
+{\bf Input:} & \cmdTP@test@input\\[0.5\baselineskip]
+{\bf Output:} & \cmdTP@test@output\\[0.5\baselineskip]
+{\bf Expected:} & \cmdTP@test@pass\\[\baselineskip]
+{\bf Result:} & \cmdTP@test@result
+\end{tabularx}
+\end{mdframed}
+}
+
+\newcommand{\testautob}[1]{
+\setkeys[TP]{test}{#1}
+\refstepcounter{TestNum}
+\begin{mdframed}[linewidth=1pt]
+\begin{tabularx}{\textwidth}{@{}p{3cm}X@{}}
+{\bf Test \#\theTestNum:} & {\bf \cmdTP@test@name}\\[\baselineskip]
+{\bf Description:} & \cmdTP@test@desc\\[0.5\baselineskip]
+{\bf Type:} & \cmdTP@test@type\\[0.5\baselineskip]
+{\bf Pass:} & \cmdTP@test@pass\\[\baselineskip]
+{\bf Result:} & \cmdTP@test@result
+\end{tabularx}
+\end{mdframed}
+}
+
+\newcommand{\testmanual}[1]{
+\setkeys[TP]{test}{#1}
+\refstepcounter{TestNum}
+\begin{mdframed}[linewidth=1pt]
+\begin{tabularx}{\textwidth}{@{}p{3cm}X@{}}
+{\bf Test \#\theTestNum:} & {\bf \cmdTP@test@name}\\[\baselineskip]
+{\bf Description:} & \cmdTP@test@desc\\[0.5\baselineskip]
+{\bf Type:} & \cmdTP@test@type\\[0.5\baselineskip]
+{\bf Tester(s):} & \cmdTP@test@user\\[0.5\baselineskip]
+{\bf Pass:} & \cmdTP@test@pass\\[\baselineskip]
+{\bf Result:} & \cmdTP@test@result
+\end{tabularx}
+\end{mdframed}
+}
+
+\usepackage{xifthen}
+\def\namedlabel#1#2{\begingroup
+    #2%
+    \def\@currentlabel{#2}%
+    \phantomsection\label{#1}\endgroup
+}
+
+
+\newcommand{\newterm}[1]{\label{Term:#1} \MakeUppercase #1}
+\newcommand{\term}[2][]{\ifthenelse{\equal{#1}{}}{\hyperref[Term:#2]{\textbf{#2}}}{\hyperref[Term:#1]{\textbf{#2}}}}
+
+
+
+
+\begin{document}
+
+\maketitle
+
+\pagenumbering{roman}
+\tableofcontents
+\listoftables
+\listoffigures
+
+\newpage
+\begin{table}[hbp!]
+\caption{\bf Revision History}
+\begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
+\toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
+\midrule
+2022-04-11 & 1.0 & Initial document creation\\
+2022-04-12 & 1.1 & Added sections 1, 3, 4, 5 and 6\\
+2022-04-12 & 1.2 & Cleaned up formatting of revision history, tables of abbreviations and definitions and document introduction\\
+2022-04-12 & 1.3 & Added initial draft of section 2 non-functional requirements evaluation, as well as symbolic parameters subsection and uses\\
+2022-04-12 & 1.4 & Added initial draft of section 7 trace to requirements\\
+2022-04-12 & 1.5 & Added initial draft of section 8 trace to modules\\
+\textcolor{red}{2022-04-12} & \textcolor{red}{2.0} & \textcolor{red}{Completed Test Report documentation for Revision 1 submission}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage
+
+\pagenumbering{arabic}
+\newpage
+    
+\begin{table}[htbp]
+\caption{\textbf{Table of Abbreviations}} \label{abbrev}
+
+\begin{tabularx}{\textwidth}{p{3cm}X}
+\toprule
+\textbf{Abbreviation} & \textbf{Definition} \\
+\midrule
+\newterm{FR} & Functional Requirement\\
+\hline
+\newterm{GUI} & Graphical User Interface\\
+\hline
+\newterm{LF} & Look and Feel test\\
+\hline
+\newterm{NFR} & \term{Non-Functional Requirement}\\
+\hline
+\newterm{PAGAN} & \term{Python Avatar Generator for Absolute Nerds}\\
+\hline
+\newterm{PE} & Performance test\\
+\hline
+\newterm{RFG} & \term{Random Flag Generator}\\
+\hline
+\newterm{RGB} & Red Green Blue\\
+\hline
+\newterm{SRS} & Software Requirements Specification\\
+\hline
+\newterm{UH} & Usability and Humanity test\\
+\hline
+\newterm{UI} & User Interface\\
+\bottomrule
+\end{tabularx}
+
+\end{table}
+
+\newpage
+\begin{table}[htbp]
+\caption{\textbf{Table of Definitions}} \label{def}
+
+\begin{tabularx}{\textwidth}{p{3cm}X}
+\toprule
+\textbf{Term} & \textbf{Definition}\\
+\midrule
+\newterm{Gallery} & Collection of previously generated flags.\\
+\hline
+\newterm{Graphical User Interface} & A form of UI that allows users to use
+  electronic devices using interactive graphics.\\
+\hline
+\newterm{Hashing} & Algorithm that converts input data to a fixed-size value.
+  A hashing function usually outputs a string or hexadecimal value.\\
+\hline
+\newterm{Input String} & The input of type string from the user.\\
+\hline
+\newterm{Pytest} & Python testing tool that allows testers to write test code
+  and create simple and scalable test cases.\\
+\hline
+\newterm{Python} & The programming language used in this project.\\
+\hline
+\newterm{Software Requirements Specification} & A document that details what
+  the program/software will do and how it will accomplish the expected
+  performance/tasks.\\
+\hline
+\newterm{System/Program} & Collection of instructions or components that tell
+  a computer how to operate.\\
+\hline
+\newterm{Tester} & An individual testing the software via the user interface
+  or the code/test cases.\\
+\hline
+\newterm{Test Case} & a specification of inputs, execution conditions,
+  producedure and expected results for testing a program's behaviour.\\
+\hline
+\newterm{Typeform} & Website that is a software as a service that specializes
+  in creating and building online surveys.\\
+\hline
+\newterm{User} & Person who uses or operates a computer program.\\
+\hline
+\newterm{User Interface} & Where interactions between machines and humans
+  occur.\\
+\bottomrule
+\end{tabularx}
+    
+\end{table} 
+
+\newpage
+
+This document details the complete testing process for Random Flag Generator,
+as laid out in the project test plan. It contains an evaluation of the
+project's functional and non-functional requirements that are defined in the
+\hyperlink{https://gitlab.cas.mcmaster.ca/palanicv/3xa3__l01_gr16_project/-/blob/master/Doc/Rev1/SRS/RequirementsDocument.pdf}{\textbf{Software Requirements Specification}},
+the changes made due to testing, and an analysis of the traceability between
+requirements and modules.
+
+\section{Functional Requirements Evaluation}
+The following are the test cases that were evaluated for testing the
+functional requirements of this system.
+
+\subsection{User Interface Testing}
+\testauto{
+    name = {FR-01},
+    desc =  UI initialization,
+    type = {Functional, Dynamic, Manual},
+    init = UI is uninitialized,
+    input = command to initialize and run the UI,
+    output = UI is initialized,
+    pass = {main menu UI should open and allow the
+    user to enter text into the input string field. The main menu should also
+    present buttons for the instructions, flag gallery and settings menus},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-02},
+    desc =  UI handles button clicks,
+    type = {Functional, Dynamic, Manual},
+    init = UI is initialized and running,
+    input = {mouse clicks on the instructions, flag gallery or settings menu
+    buttons, or the appropriate keyboard strokes assigned to open each menu},
+    output = {the instructions, flag gallery or settings menu will be pulled up and
+    can be viewed in its entirety},
+    pass = {From main menu UI, button clicks pull up appropriate menu},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-03},
+    desc =  UI handles user text input,
+    type = {Functional, Dynamic, Manual},
+    init = UI is initialized and running,
+    input = {keyboard strokes to (re)enter text into the input string field},
+    output = {text appears in the input string field},
+    pass = {User is able to enter and re-enter input strings and it shows up in the input string field},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-04-08},
+    desc =  flag is generated and saved,
+    type = {Functional, Dynamic, Manual},
+    init = UI is initialized and running,
+    input = {(text in input string field and) mouse click on generate flag button},
+    output = {flag will be generated using the input string and saved on the local
+    machine (in \/generated\_flags directory)},
+    pass = {Clicking the generate button, generates and saves the flag image},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-05-09},
+    desc =  flag is displayed,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running, a flag has already finished
+    generating},
+    input = {(text in the input string field and) mouse click on the display flag
+    button.},
+    output = {generated flag with be displayed to the user through the UI},
+    pass = {Clicking the display button, displays the most recently generated flag image},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-06-10},
+    desc =  flag settings overrides the most recent display,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running, a flag has already finished generating},
+    input = {(text in the input string field,) saved changes to the settings and
+    mouse click on the display flag button},
+    output = {flag will be regenerated using the input string and changed settings,
+    and saved on the local machine (in \/generated\_flags directory)},
+    pass = {User selected settings overrides the most recently generated flag},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-07-11},
+    desc =  newly generated flag should appear in flag gallery,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running},
+    input = {(text in the input string field and) mouse click on the generate flag button},
+    output = {flag will be generated using the input string and saved on the local
+    machine (in \/generated\_flags directory) using the input string as its (default) name},
+    pass = {User's newly generated flag should appear in flag gallery},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-12-13},
+    desc =  UI displays instructions menu,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running},
+    input = {mouse click on the instructions button, or the appropriate keyboard
+    stroke assigned to open the instructions menu},
+    output = {the instructions menu will be pulled up and can be viewed in its
+    entirety, and a button will be displayed that the user can click on to close
+    the instructions menu and return to the main menu},
+    pass = {UI displays instructions menu after clicking instructions button and can return to main menu},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-14},
+    desc =  UI displays settings menu,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running},
+    input = {mouse click on the settings button, or the appropriate keyboard stroke
+    assigned to open the settings menu, and clicks/dragging to change settings},
+    output = {the settings menu will be pulled up where settings can be changed},
+    pass = {UI displays settings menu after clicking settings button and can return to main menu},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-15},
+    desc =  UI displays version number,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running},
+    input = {mouse click on the settings button, or the appropriate keyboard stroke
+    assigned to open the settings menu},
+    output = {the settings menu will be pulled up where the flag generator version
+    will be displayed},
+    pass = {UI displays version number on settings menu after clicking settings button and can return to main menu},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-16},
+    desc =  Close settings menu to view main menu,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running},
+    input = {mouse click on the settings button, or the appropriate keyboard stroke
+    assigned to open the settings menu},
+    output = {the settings menu will be pulled up where a return to main menu button
+    will be displayed that the user can click on to close the settings menu and
+    return to the main menu},
+    pass = {From the settings menu, clicking return to main menu closes settings and returns to main menu},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-17},
+    desc =  Open flag gallery menu from main menu,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running},
+    input = {mouse click on the flag gallery button, or the appropriate keyboard
+    stroke assigned to open the flag gallery menu},
+    output = {the flag gallery menu will be pulled up where a list of all flags and
+    the input strings used to generate them will be displayed},
+    pass = {From the main menu, clicking on the flag gallery button brings up the flag gallery menu},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {FR-19},
+    desc =  Return to main menu from flag gallery menu,
+    type = {Functional, Dynamic, Manual},
+    init = {UI is initialized and running},
+    input = {mouse click on the flag gallery button, or the appropriate keyboard
+    stroke assigned to open the flag gallery menu},
+    output = {the flag gallery menu will be pulled up where a button will be
+    displayed that the user can click on to close the flag gallery menu and return
+    to the main menu},
+    pass = {From the settings menu, clicking return to main menu closes settings and returns to main menu},
+    result = \textcolor{Green}{PASS}
+}
+
+\subsection{Output Testing}
+\testauto{
+    name = {test\_get\_hash\_algo},
+    desc =  getting the correct hashing algorithm,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {input string of hashing algorithm name},
+    output = {hashlib hashing algorithm},
+    pass = {returns the correct hashing algorithm based on the given input},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_get\_hash\_hex},
+    desc =  getting the correct hash digest from input,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {input string to be used to generate flag, hashlib hashing algorithm},
+    output = {hash digest of input string in hexadecimal form},
+    pass = {returns the correct hash digest in hexadecimal form based on the given input},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_hash\_generator},
+    desc =  getting the correct hash digest from input,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {input string to be used to generate flag},
+    output = {hash digest of input string in hexadecimal form},
+    pass = {returns the correct hash digest in hexadecimal form based on the given input},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_pad\_hashcode},
+    desc =  padding hash digest to minimum length,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {output hash string padded to minimum hash length},
+    pass = {returns a modified hash digest of at least minimum length},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_choose\_from\_list},
+    desc =  choose element from list,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {list of elements, float value to determine an index to
+    be used to select an element from the list},
+    output = {element from the list with index larger than and
+    closest to input float value},
+    pass = {returns the correct value from the list},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_map\_decision},
+    desc =  generating an float index value,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {three numerical values representing the maximum
+    possible option, the number of possible decisions and the digit to map within
+    the possible options},
+    output = {float index value to be used to decide which element
+    to select (presumably from a list)},
+    pass = {returns the correct float value representing an index},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_split\_sequence},
+    desc =  split string into substrings,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {input string, integer value specifying the length of
+    the substrings to be split from the input string},
+    output = {list of substrings from the input string with as many
+    substrings of the specified length as possible},
+    pass = {returns a list of substrings of the corrent length},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_grind\_hash\_for\_colors},
+    desc =  generate colors from hash digest,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {list of five colors' RGB values (R, G, B)},
+    pass = {returns a list of 5 correct RGB values},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_grind\_hash\_for\_base\_stripe\_style},
+    desc =  generate stripe style from hash digest,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {output string of base stripe style to be used to
+    generate flag},
+    pass = {return correct base striple style value},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_grind\_hash\_for\_overlay\_stripe\_style},
+    desc =  generate stripe style from hash digest,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {output string of overlay stripe style to be used to
+    generate flag},
+    pass = {return correct overlay striple style value},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_grind\_hash\_for\_stripe\_number},
+    desc =  generate stripe number from hash digest,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {output string of stripe number to be used to
+    generate flag},
+    pass = {return correct stripe number value},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_grind\_hash\_for\_symbol\_locations},
+    desc =  generate symbol location from hash digest,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {output string of symbol location to be used to
+    generate flag},
+    pass = {return correct symbol location value},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_grind\_hash\_for\_symbol\_number},
+    desc =  generate symbol number from hash digest,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {output string of symbol number to be used to
+    generate flag},
+    pass = {return correct symbol number value},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_grind\_hash\_for\_symbol\_types},
+    desc =  generate symbol type from hash digest,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hash string to be used to generate flag},
+    output = {output string of symbol type to be used to
+    generate flag},
+    pass = {return correct symbol type value},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_hex2rgb},
+    desc =  generate RGB value from hexadecimal input,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {output hexidecimal color code string to be used to generate flag},
+    output = {output tuple of RGB values for color derived from heximdecimal color
+    code string to be used to generate flag},
+    pass = {return corresponding RGB tuple values based on hexadecimal input},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_diff},
+    desc =  absolute difference of float values,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {two float values},
+    output = {absolute value of the difference between the two given
+    float value},
+    pass = {return correct absolute difference of the two input floats},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_generate\_flag},
+    desc =  flag is generated correctly,
+    type = {Functional, Dynamic, Automated, Manual},
+    init = {},
+    input = {input string, hashing algorithm name string and
+    dictionary of settings (i.e. chosen colours, elements)to be used to generate
+    flag},
+    output = {generated flag image file},
+    pass = {Manual visual comparison of generated flag agrees with expected output, flag pixels match expected pixels},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_generate\_flag\_data},
+    desc =  flag data is generated correctly,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {input string, hashing algorithm name string to be used to generate flag},
+    output = {tuple consisting of list of 5 tuples of RGB values, tuple of stripe
+    style, number and tuple of symbol location, number and type},
+    pass = {All generated outputs match their expected output values},
+    result = \textcolor{Green}{PASS}
+}
+\testauto{
+    name = {test\_parse\_jka\_file},
+    desc =  asset files are properly read,
+    type = {Functional, Dynamic, Automated},
+    init = {},
+    input = {input string of flag asset (.jka) file name to be
+    parsed for pixel data},
+    output = {list consisting of tuples of (x, y) coordinates of the
+    position of all filled pixels that compose the selected flag asset},
+    pass = {All generated pixel coordinates match their expected values},
+    result = \textcolor{Green}{PASS}
+}
+\section{Nonfunctional Requirements Evaluation}
+The following are the test cases that were evaluated for testing the
+non-functional requirements of this system.
+
+\pagebreak
+\subsection{Look and Feel Requirements}
+\testmanual{
+    name = {LF-01},
+    desc =  Tests that the user interface makes it easy for users to navigate the program
+    using developer judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {LF-02},
+    desc =  Tests that the image quality and aesthetics of the generated flags are
+    aesthetically pleasing using a rating survey with options on a scale of 1-10,
+    type = {Manual, Functional, Dynamic},
+    user = {Testers},
+    pass = {Average survey score of at least $\hyperlink{theta_mid}{\Theta_{mid}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 95\%
+}
+\testmanual{
+    name = {LF-03},
+    desc =  Tests that the colours used in the generated flag are within certain colour
+    ranges using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 90\%
+}
+\testmanual{
+    name = {LF-04},
+    desc =  Tests that all flag components are visible in the generated flag image using
+    developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_min}{\Theta_{min}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+
+\pagebreak
+\subsection{Usability and Humanity Requirements}
+\testmanual{
+    name = {UH-01},
+    desc =  Tests that user interface components are placed in a logically flowing manner
+    using developer judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 95\%
+}
+\testmanual{
+    name = {UH-02},
+    desc =  Tests that the user must not have to jump between interfaces to accomplish a task
+    using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {UH-03},
+    desc =  Tests that the program is easy-to-use for people aged
+    $\hyperlink{min_age}{MIN\_AGE}$ or older using tester judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Testers},
+    pass = {Average tester consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {UH-05},
+    desc =  Tests that user is able to select output specifications (type of hashing\, type
+    of image file\, etc.) using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 90\%
+}
+\testmanual{
+    name = {UH-07},
+    desc =  Tests that the user is able to use the program with no prior experience using developer and tester judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Developers, Testers},
+    pass = {Average developer/tester consensus of at least
+    $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 90\%
+}
+\testmanual{
+    name = {UH-08},
+    desc =  Tests that the user is able to access a brief instructions blurb using tester
+    judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Testers},
+    pass = {Average tester consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {UH-09},
+    desc =  Tests that the user is able to use the program by following the main user interface
+    instructions only using developer and tester judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Developers, Testers},
+    pass = {Average developer/tester consensus of at least
+    $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {UH-10},
+    desc =  Tests that the program uses consistent language throughout using developer
+    judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {UH-11},
+    desc =  Tests that the program uses simplified terminology wherever possible using
+    developer judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {UH-12},
+    desc =  Tests that the program uses easy-to-read fonts and font sizes using tester
+    judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Testers},
+    pass = {Average tester consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 95\%
+}
+
+\subsection{Performance Requirements}
+\testmanual{
+    name = {PE-01-02},
+    desc =  Tests that the program minimizes the time taken to generate and process the downloading of an image using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-03},
+    desc =  Tests that the program minimizes the time taken to load in a user’s gallery (i.e.
+    average gallery load time is below $\hyperlink{max_load_time}{MAX\_LOAD\_TIME}$) using
+    timing tests and developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Program loads in the user's gallery with an average load time less than
+    $\hyperlink{max_load_time}{MAX\_LOAD\_TIME}$ and an average developer consensus of at
+    least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an average load time within
+    $\hyperlink{max_load_time}{MAX\_LOAD\_TIME}$ and an agreement of 100\%
+}
+\testmanual{
+    name = {PE-04},
+    desc =  Tests that the different hashing systems all deliver consistent and precise
+    outputs using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-05},
+    desc =  Tests that the generated images all have accurately placed components (i.e.
+    matching the templates) using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-06},
+    desc =  Tests that the colours in the generated flag image are precise (i.e. the
+    hexadecimal value produces the correct colour) using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-07},
+    desc =  Tests that the program is available to run anytime in the day using developer
+    judgement and consensus,
+    type = {Manual, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-09},
+    desc =  Tests that the program limits the number of users to one per machine using
+    developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-10},
+    desc =  Tests that the program allows for the addition of other hashing functions
+    (relatively easily) using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-11},
+    desc =  Tests that the program allows for the addition of other flag components
+    (relatively easily) using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 95\%
+}
+
+\subsection{Operational and Environmental Requirements}
+\testmanual{
+    name = {PE-13},
+    desc =  Tests that the program does not require an internet connection to function using
+    developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+\testmanual{
+    name = {PE-14},
+    desc =  Tests that the program can run on any computer that can support the Python
+    language using developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+
+\subsection{Interfacing with Adjacent Systems Requirements}
+\testmanual{
+    name = {PE-15},
+    desc =  Tests that the program does not alter files outside the working directory using
+    developer judgement and consensus,
+    type = {Manual, Functional, Dynamic},
+    user = {Developers},
+    pass = {Average developer consensus of at least $\hyperlink{theta_max}{\Theta_{max}}$},
+    result = \textcolor{Green}{PASS} with an agreement of 100\%
+}
+	
+\section{Comparison to Existing Implementation}
+The original source project, PAGAN only had about 15 test cases spread
+throughout the module files, and did not do a thorough job testing the
+program. There was no additional documentation provided in the source code
+with any reference to tracing these tests to specific requirements. For Random
+Flag Generator multiple documents were produced that help trace between
+requirements and testing. These documents include: a software requirements
+specification, a test plan, and additional design documentation. In all, with
+the added traceability through the documentation, over 60 test cases were
+developed and performed for automated functional testing, and multiple
+non-functional requirements tests were also performed to ensure program
+robustness and correctness before finalizing the project.
+
+\section{Unit Testing}
+Unit testing was a large part of the testing done for Random Flag Generator.
+All functional modules had unit tests written and performed. Unit testing is
+crucial to this project, as there are many small specific functions that
+perform calculations or make deicisons that get used by other modules. All
+modules must produce the correct output to be taken in by the next module as
+input, to ensure a correct and complete final generated image. If at any
+point, any of the modules' functionality is incorrect, the final flag
+generation cannot be guaranteed. Additionally, given the random nature of the
+program(ie. decisions using hashing), it was important to make sure most if
+not all of the possible options were able to be selected, ensuring the widest
+array of flag options possible.
+
+\section{Changes Due to Testing}
+No major changes occurred due to the testing that took place. Small changes
+occured in individual modules to better handle boundary cases. For example,
+the Hash Generator was not able to handle certain hashing algorithm type
+inputs like SHAKE, as it required additional user input. A workaround was
+implemented for this algorithm type, when this bug arose during testing.
+
+\section{Automated Testing}
+All of the non-GUI functionality of the program was tested automatically using
+the pytest unit test framework. A suite of unit tests were developed and then
+ran for each functional module. The testing of the GUI was not automated, as
+ad-hoc user input was better for GUI testing. Additionally, image generation
+(and correctness) were able to be tested using pixel by pixel comparisons
+(done in a unit test format).
+
+\section{Trace to Requirements}
+Traceability matrices documenting the traceability between the test cases and
+the various functional and non-functional requirements of this system are
+shown on the next few pages.
+
+\begin{landscape}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Functional Requirements I}}
+\label{tab:trace_matrix_01}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{14}{c|}{Requirements} \\
+\hline
+Test Cases & FR1 & FR2 & FR3 & FR4 & FR5 & FR6 & FR7 & FR8 & FR9 & FR10 & FR11 & FR12 & FR13 & FR14 \\
+\hline
+FR-01 & X & & & & & & & & & & & & & \\
+\hline
+FR-02 & & X & & & & & & & & & & & & \\
+\hline
+FR-03 & & & X & & & & & & & & & & & \\
+\hline
+FR-04-08 & & & & X & & & & X & & & & & & \\
+\hline
+FR-05-09 & & & & & X & & & & X & & & & & \\
+\hline
+FR-06-10 & & & & & & X & & & & X & & & & \\
+\hline
+FR-07-11 & & & & & & & X & & & & X & & & \\
+\hline
+FR-12-13 & & & & & & & & & & & & X & X & \\
+\hline
+FR-14 & & & & & & & & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Functional Requirements II/Non-Functional Requirements I}}
+\label{tab:trace_matrix_02}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{12}{c|}{Requirements} \\
+\hline
+Test Cases & FR15 & FR16 & FR17 & FR19 & LF1 & LF2 & LF3 & LF4 & UH1 & UH2 & UH3 & UH5 \\
+\hline
+FR-15 & X & & & & & & & & & & & \\
+\hline
+FR-16 & & X & & & & & & & & & & \\
+\hline
+FR-17 & & & X & & & & & & & & & \\
+\hline
+FR-19 & & & & X & & & & & & & & \\
+\hline
+LF-01 & & & & & X & & & & & & & \\
+\hline
+LF-02 & & & & & & X & & & & & & \\
+\hline
+LF-03 & & & & & & & X & & & & & \\
+\hline
+LF-04 & & & & & & & & X & & & & \\
+\hline
+UH-01 & & & & & & & & & X & & & \\
+\hline
+UH-02 & & & & & & & & & & X & & \\
+\hline
+UH-03 & & & & & & & & & & & X & \\
+\hline
+UH-05 & & & & & & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Non-Functional Requirements II}}
+\label{tab:trace_matrix_03}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{12}{c|}{Requirements} \\
+\hline
+Test Cases & UH7 & UH8 & UH9 & UH10 & UH11 & UH12 & PE1 & PE2 & PE3 & PE4 & PE5 & PE6 \\
+\hline
+UH-07 & X & & & & & & & & & & & \\
+\hline
+UH-08 & & X & & & & & & & & & & \\
+\hline
+UH-09 & & & X & & & & & & & & & \\
+\hline
+UH-10 & & & & X & & & & & & & & \\
+\hline
+UH-11 & & & & & X & & & & & & & \\
+\hline
+UH-12 & & & & & & X & & & & & & \\
+\hline
+PE-01-02 & & & & & & & X & X & & & & \\
+\hline
+PE-03 & & & & & & & & & X & & & \\
+\hline
+PE-04 & & & & & & & & & & X & & \\
+\hline
+PE-05 & & & & & & & & & & & X & \\
+\hline
+PE-06 & & & & & & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Traceability Matrix for Non-Functional Requirements III}}
+\label{tab:trace_matrix_03}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+& \multicolumn{7}{c|}{Requirements} \\
+\hline
+Test Cases & PE7 & PE9 & PE10 & PE11 & PE13 & PE14 & PE15 \\
+\hline
+PE-07 & X & & & & & & \\
+\hline
+PE-09 & & X & & & & & \\
+\hline
+PE-10 & & & X & & & & \\
+\hline
+PE-11 & & & & X & & & \\
+\hline
+PE-13 & & & & & X & & \\
+\hline
+PE-14 & & & & & & X & \\
+\hline
+PE-15 & & & & & & & X \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{landscape}
+
+\section{Trace to Modules}		
+The traceability table documenting the traceability between the functional
+requirements and the system module(s) that implement them is shown below.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{p{0.2\textwidth} p{0.6\textwidth}}
+\toprule
+\textbf{Req.} & \textbf{Modules}\\
+\midrule
+FR1 & \mref{M7}\\
+FR2 & \mref{M7}\\
+FR3 & \mref{M7}\\
+FR4 & \mref{M1}, \mref{M2}, \mref{M3}, \mref{M4}, \mref{M5}, \mref{M6}, \mref{M7}\\
+FR5 & \mref{M8}\\
+FR6 & \mref{M1}, \mref{M2}, \mref{M3}, \mref{M4}, \mref{M5}, \mref{M6}, \mref{M11}\\
+FR7 & \mref{M6}\\
+FR8 & \mref{M1}, \mref{M2}, \mref{M3}, \mref{M4}, \mref{M5}, \mref{M6}, \mref{M7}\\
+FR9 & \mref{M8}\\
+FR10 & \mref{M1}, \mref{M2}, \mref{M3}, \mref{M4}, \mref{M5}, \mref{M6}, \mref{M11}\\
+FR11 & \mref{M6}, \mref{M7}, \mref{M9}\\
+FR12 & \mref{M10}\\
+FR13 & \mref{M10}\\
+FR14 & \mref{M11}\\
+FR15 & \mref{M11}\\
+FR16 & \mref{M11}\\
+FR17 & \mref{M9}\\
+FR19 & \mref{M9}\\
+\bottomrule
+\end{tabular}
+\caption{Trace Between Requirements and Modules}
+\label{TblRT}
+\end{table}
+
+\section{Code Coverage Metrics}
+
+\subsection{Symbolic Parameters}
+The definition of the test cases will call for SYMBOLIC\_CONSTANTS. Their values are defined in this section for easy maintenance. \\ \\
+$\hypertarget{min_age}{MIN\_AGE}$ = 7 \\
+$\hypertarget{max_find_time}{MAX\_FIND\_TIME}$ = 5 \\
+$\hypertarget{max_load_time}{MAX\_LOAD\_TIME}$ = 2 \\
+$\hypertarget{theta_min}{\Theta_{min}}$ = 80 \\
+$\hypertarget{theta_mid}{\Theta_{mid}}$ = 90 \\
+$\hypertarget{theta_max}{\Theta_{max}}$ = 100 \\
+
+\bibliographystyle{plainnat}
+
+\bibliography{SRS}
+
+\end{document}
